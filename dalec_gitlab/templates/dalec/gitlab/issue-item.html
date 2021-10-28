@@ -1,0 +1,18 @@
+{% extends "dalec/default/item.html" %}
+{% block item_content %}
+    <h2>{{ object.content_data.title }} <code>{{object.content_data.references.full}}</code></h2>
+    <p>
+    Status : {{ object.content_data.state }}
+    {{ object.content_data.state }}, créée par {{ object.content_data.author.name }}
+    à {{ object.creation_dt }}.
+    </p>
+    <label>Liens</label>
+    <ul>
+        <li><a href="{{object._links.self}}"> vers l'issue</a></li>
+        <li><a href="{{object._links.project}}"> vers le projet</a></li>
+    </ul>
+
+    <div>
+    {{ object.content_data }}
+    </div>
+{% endblock %}

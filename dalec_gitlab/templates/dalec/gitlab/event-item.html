@@ -1,0 +1,13 @@
+{% extends "dalec/default/item.html" %}
+{% block item_content %}
+    <h2>{{ object.content_data.author.name }}</h2>
+    <p>
+    Action : {{object.content_data.action_name}}, le
+    {{object.creation_dt|date:"DATE_FORMAT" }} par {{ object.content_data.author.name }}
+  
+    </p>
+    
+    <div>
+        {{ object.content_data }}
+    </div>
+{% endblock %}
