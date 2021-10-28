@@ -1,9 +1,11 @@
 from datetime import timedelta
 from typing import Dict
 import requests
+import urllib.parse
 
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import now
+from django.utils.http import urlencode
 from django.conf import settings
 
 from dalec.proxy import Proxy
@@ -33,15 +35,25 @@ class GitlabProxy(Proxy):
 
         raise ValueError("Invalid content_type %s" % content_type)
 
-    def _filter_channel(channel=None, channel_object=None):
+    def _filter_channel(self, channel=None, channel_object=None):
+        channel_object = urllib.parse.unquote(channel_object)
         if channel is None:
             channel_retrieved = gl
         elif channel == "user":
-            channel_retrieved = gl.users.get(channel_object)
+            # Users are get via their username
+            channel_retrieved = gl.users.list(username=channel_object)[0]
         elif channel == "group":
-            channel_retrieved = gl.groups.get(channel_object)
+            # Group are get via their full_path
+            try:
+                channel_retrieved = gl.groups.get(channel_object)
+            except gitlab.exceptions.GitlabGetError:
+                raise ValueError(f"Group {channel_object} is not found.")
         elif channel == "project":
-            channel_retrieved = gl.projects.get(channel_object)
+            # Project are get via their project_name_with_namespace
+            try:
+                channel_retrieved = gl.projects.get(channel_object)
+            except gitlab.exceptions.GitlabGetError:
+                raise ValueError(f"Project {channel_object} is not found.")
 
         return channel_retrieved
 
@@ -52,7 +64,7 @@ class GitlabProxy(Proxy):
             if channel not in ["group", "project"]:
                 raise ValueError(
                     """Value `{}` is not a correct value for channel type and Issue. Issue has no meaning
-                    for it. It must be either {group, project}
+                    for it. It must be either "group" or "project"}
                     """.format(
                         channel
                     )
@@ -60,12 +72,12 @@ class GitlabProxy(Proxy):
         else:
             options["scope"] = "all"
 
-        channel_retrieved = _filter_channel(channel, channel_object)
+        channel_retrieved = self._filter_channel(channel, channel_object)
         issues = channel_retrieved.issues.list(**options)
 
         contents = {}
         for issue in issues:
-            contents[id] = {
+            contents[issue.id] = {
                 **issue.attributes,
                 # id is already in attributes
                 "last_update_dt": now(),
@@ -77,10 +89,10 @@ class GitlabProxy(Proxy):
         options = {"per_page": nb}
 
         if channel is not None:
-            if channel not in ["project", "user", "issue"]:
+            if channel not in ["group", "project", "user", "issue"]:
                 raise ValueError(
                     """Value `{}` is not a correct value for channel type and Event. Event has no meaning
-                    for it. It must be either {project, user, issue}
+                    for it. It must be either "project", "user" or "issue".
                     """.format(
                         channel
                     )
@@ -88,12 +100,19 @@ class GitlabProxy(Proxy):
         else:
             options["scope"] = "all"
 
-        channel_retrieved = _filter_channel(channel, channel_object)
-        events = channel_retrieved.events.list(**options)
+        channel_retrieved = self._filter_channel(channel, channel_object)
+
+        if channel == "group":
+            events = []
+            for project in channel_retrieved.projects.list(all=True):
+                p = gl.projects.get(project.id)
+                events += p.events.list(**options)
+        else:
+            events = channel_retrieved.events.list(**options)
 
         contents = {}
         for event in events:
-            contents[id] = {
+            contents[event.id] = {
                 **event.attributes,
                 # id is already in attributes
                 "last_update_dt": now(),

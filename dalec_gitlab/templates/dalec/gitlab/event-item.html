@@ -1,13 +1,78 @@
 {% extends "dalec/default/item.html" %}
 {% block item_content %}
-    <h2>{{ object.content_data.author.name }}</h2>
-    <p>
-    Action : {{object.content_data.action_name}}, le
-    {{object.creation_dt|date:"DATE_FORMAT" }} par {{ object.content_data.author.name }}
-  
-    </p>
-    
-    <div>
-        {{ object.content_data }}
-    </div>
+<div class="event-item-timestamp">
+    <time class="js-timeago" title="{{object.content_data.creation_dt}}"
+        datetime="{{object.content_data.creation_dt}}" data-toggle="tooltip" data-placement="top" data-container="body">
+        {{object.content_data.creation_dt}}
+    </time>
+</div>
+<div class="system-note-image user-avatar">
+    <a href="{{object.content_data.author.web_url}}">
+        <img alt="{{object.content_data.author.name}}'s avatar"
+             src="{{object.content_data.author.avatar_url}}?width=32"
+             data-container="body" class="avatar s32 d-none d-sm-inline-block has-tooltip"
+                                   title="{{object.content_data.author.name}}">
+    </a>
+</div>
+<div class="event-user-info">
+    <span class="author-name">
+        <a title="{{object.content_data.author.name}}" href="{{object.content_data.author.web_url}}">
+            {{object.content_data.author.name}}
+        </a></span>&nbsp;<span class="username">@{{object.content_data.author.username}}
+    </span>
+</div>
+
+<div class="event-title d-flex flex-wrap">
+    {% if object.content_data.action_name == "pushed" %}
+    <span class="system-note-image-inline d-none d-sm-flex gl-mr-2 pushed-to-icon align-self-center">
+        <svg class="s14" data-testid="commit-icon">
+            <use xlink:href="/assets/icons-6d7d4be41eac996c72b30eac2f28399ac8c6eda840a6fe8762fc1b84b30d5a2d.svg#commit"></use>
+        </svg>
+    </span>
+
+    <span class="event-type d-inline-block gl-mr-2 pushed">pushed to branch</span>
+
+    <span class="gl-mr-2 text-truncate">
+        <a class="ref-name" href="/p/P0044/meca_vol/-/commits/set-sast-config-1">set-sast-config-1</a>
+    </span>
+    <span class="event-scope">
+        at
+        <a title="meca_vol" class="gl-link" href="/p/P0044/meca_vol">
+            <span class="namespace-name">Projects / Ad Astra - Open-sourced Reusable Launcher / </span>
+            <span class="project-name">meca_vol</span>
+        </a>
+    </span>
+    {% endif %}
+
+</div>
+
+<div class="event-body">
+
+    {% if object.content_data.action_name == "pushed" %}
+    <ul class="content-list event-commits">
+        <li class="commit">
+            <div class="commit-row-title">
+                <a class="commit-sha" alt="" title="c329b243" href="/p/P0044/meca_vol/-/commit/c329b24378a2b1ec3425ce5aee77dcd9a24085a0">c329b243</a>
+                ·
+                Configure SAST in `.gitlab-ci.yml`, creating this file if it does n...
+            </div>
+        </li>
+
+    </ul>
+    {% endif %}
+</div>
+
+
+
+<div>
+    <button id="btnFadetoggle"
+            class="btn btn-primary"
+            type="button"
+            onclick="$('.api-full').fadeToggle();"
+            >
+            Voir tout le retour de l'API
+    </button>
+    <pre class="api-full" style="display: none;"> {{ object.content_data|pprint }} </pre>
+</div>
+<hr>
 {% endblock %}

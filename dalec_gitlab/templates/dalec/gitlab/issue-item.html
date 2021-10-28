@@ -8,11 +8,15 @@
     </p>
     <label>Liens</label>
     <ul>
-        <li><a href="{{object._links.self}}"> vers l'issue</a></li>
-        <li><a href="{{object._links.project}}"> vers le projet</a></li>
+        <li><a href="{{object.content_data.web_ur}}"> vers l'issue</a></li>
     </ul>
 
     <div>
-    {{ object.content_data }}
+        <button id="btnFadetoggle" class="btn btn-primary" type="button"
+                onclick="$('.api-full').fadeToggle();"
+            >
+            Voir tout le retour de l'API
+        </button>
+        <pre class="api-full" style="display: none;"> {{ object.content_data|pprint }} </pre>
     </div>
 {% endblock %}
