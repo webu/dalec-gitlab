@@ -36,7 +36,9 @@ class GitlabProxy(Proxy):
         raise ValueError("Invalid content_type %s" % content_type)
 
     def _filter_channel(self, channel=None, channel_object=None):
-        channel_object = urllib.parse.unquote(channel_object)
+        if channel_object:
+            channel_object = urllib.parse.unquote(channel_object)
+
         if channel is None:
             channel_retrieved = gl
         elif channel == "user":
@@ -112,9 +114,17 @@ class GitlabProxy(Proxy):
 
         contents = {}
         for event in events:
+            project = gl.projects.get(event.project_id).attributes
             contents[event.id] = {
                 **event.attributes,
                 # id is already in attributes
+                "project": {
+                    "name": project.name,
+                    "name_with_namespace": project.name_with_namespace,
+                    "path": project.path,
+                    "path_with_namespace": project.path_with_namespace,
+                    "web_url": project.web_url
+                    },
                 "last_update_dt": now(),
                 "creation_dt": event.created_at,
             }
