@@ -1,65 +1,130 @@
 {% extends "dalec/default/item.html" %}
 {% block item_content %}
 <div class="event-item-timestamp">
-    <time class="js-timeago" title="{{object.content_data.creation_dt}}"
-        datetime="{{object.content_data.creation_dt}}" data-toggle="tooltip" data-placement="top" data-container="body">
-        {{object.content_data.creation_dt}}
+    <time class="js-timeago"
+          title="{{object.content_data.creation_dt}}"
+          datetime="{{object.content_data.creation_dt}}"
+          data-toggle="tooltip"
+          data-placement="top"
+          data-container="body">
+        {{object.creation_dt|timesince}}
     </time>
 </div>
+
 <div class="system-note-image user-avatar">
     <a href="{{object.content_data.author.web_url}}">
         <img alt="{{object.content_data.author.name}}'s avatar"
              src="{{object.content_data.author.avatar_url}}?width=32"
-             data-container="body" class="avatar s32 d-none d-sm-inline-block has-tooltip"
-                                   title="{{object.content_data.author.name}}">
+             data-container="body"
+             class="avatar s32 d-none d-sm-inline-block has-tooltip"
+             title="{{object.content_data.author.name}}">
     </a>
 </div>
+
 <div class="event-user-info">
     <span class="author-name">
         <a title="{{object.content_data.author.name}}" href="{{object.content_data.author.web_url}}">
             {{object.content_data.author.name}}
-        </a></span>&nbsp;<span class="username">@{{object.content_data.author.username}}
+        </a>
     </span>
+    &nbsp;<span class="username">@{{object.content_data.author.username}}</span>
 </div>
 
 <div class="event-title d-flex flex-wrap">
-    {% if object.content_data.action_name == "pushed" %}
-    <span class="system-note-image-inline d-none d-sm-flex gl-mr-2 pushed-to-icon align-self-center">
-        <svg class="s14" data-testid="commit-icon">
-            <use xlink:href="/assets/icons-6d7d4be41eac996c72b30eac2f28399ac8c6eda840a6fe8762fc1b84b30d5a2d.svg#commit"></use>
-        </svg>
-    </span>
+    {% comment %}
+    Possible action type to be extended: https://docs.gitlab.com/ee/api/events.html#action-types
+    {% endcomment %}
 
-    <span class="event-type d-inline-block gl-mr-2 pushed">pushed to branch</span>
+    {% if object.content_data.action_name|slice:6 == "pushed" %}
+    <span class="event-type d-inline-block gl-mr-2 pushed">
+        {{object.content_data.action_name}} branch
+    </span>
 
     <span class="gl-mr-2 text-truncate">
-        <a class="ref-name" href="/p/P0044/meca_vol/-/commits/set-sast-config-1">set-sast-config-1</a>
-    </span>
-    <span class="event-scope">
-        at
-        <a title="meca_vol" class="gl-link" href="/p/P0044/meca_vol">
-            <span class="namespace-name">Projects / Ad Astra - Open-sourced Reusable Launcher / </span>
-            <span class="project-name">meca_vol</span>
+        <a class="ref-name" href="{{object.content_data.project.web_url}}/-/commits/{{object.content_data.push_data.ref}}">
+            {{object.content_data.push_data.ref}}
         </a>
     </span>
+
+    <span class="event-scope">
+        at
+        <a title="{{object.content_data.project.name}}" class="gl-link"
+            href="{{object.content_data.project.web_url}}">
+            <span class="namespace-name">{{object.content_data.project.name_with_namespace}}</span>
+        </a>
+    </span>
+
+    {% elif object.content_data.action_name == "created" %}
+    <span class="event-type d-inline-block gl-mr-2 created">
+        created project
+    </span>
+    
+    <a title="{{object.content_data.project.name}}" class="gl-link"
+        href="{{object.content_data.project.web_url}}">
+        <span class="namespace-name">{{object.content_data.project.name_with_namespace}}</span>
+    </a>
+
+    {% elif object.content_data.action_name == "opened" %}
+
+    <span class="system-note-image-inline d-none d-sm-flex gl-mr-2 opened-icon align-self-center">
+    </span>
+
+    <span class="event-type d-inline-block gl-mr-2 opened">
+        opened
+    </span>
+    <span class="event-target-type gl-mr-2">issue</span>
+    <a class="has-tooltip event-target-link gl-mr-2"
+       title="{{object.content_data.target_title}}"
+       href="{{object.content_data.project.proproject_url}}/-/issues/{{object.content_data.target_iid}}">
+        #{{object.content_data.target_iid}}
+    </a>
+    <span class="event-target-title gl-text-overflow-ellipsis gl-overflow-hidden gl-mr-2" dir="auto">
+        "{{object.content_data.target_title}}"
+    </span>
+
+    <span class="event-scope">
+        at
+        <a title="{{object.content_data.project.name}}" class="gl-link"
+            href="{{object.content_data.project.web_url}}">
+            <span class="namespace-name">{{object.content_data.project.name_with_namespace}}</span>
+        </a>
+    </span>
+
     {% endif %}
 
 </div>
 
 <div class="event-body">
 
-    {% if object.content_data.action_name == "pushed" %}
+    {% if object.content_data.action_name == "pushed to" %}
     <ul class="content-list event-commits">
         <li class="commit">
             <div class="commit-row-title">
-                <a class="commit-sha" alt="" title="c329b243" href="/p/P0044/meca_vol/-/commit/c329b24378a2b1ec3425ce5aee77dcd9a24085a0">c329b243</a>
+                <a class="commit-sha"
+                   alt=""
+                   title="{{object.content_data.push_data.commit_from|slice:8}}"
+                   href="{{object.content_data.project.web_url}}/-/commit/{{object.content_data.push_data.commit_from}}">
+                    {{object.content_data.push_data.commit_from|slice:8}}
+                </a>
                 ·
-                Configure SAST in `.gitlab-ci.yml`, creating this file if it does n...
+                {{object.content_data.push_data.commit_title}}
             </div>
         </li>
+        {% if object.content_data.push_data.commit_count > 1 %}
+        <li class="commits-stat">
+            <span>... and {{object.content.push_data.commit_count|add:-1}} more commits.</span>
+            <a
+                href="{{object.content_data.project.web_url}}/-/compare/{{object.content_data.push_data.commit_from}}...{{object.content_data.push_data.commit_to}}"><span>Compare</span>
+                <span class="commit-sha">
+                    {{object.content_data.push_data.commit_from|slice:8}}...{{object.content_data.push_data.commit_to|slice:8}}
+                </span>
+            </a>
+        </li>
+        {% endif %}
 
     </ul>
     {% endif %}
+
 </div>
 
 

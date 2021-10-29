@@ -1,22 +1,32 @@
 {% extends "dalec/default/item.html" %}
-{% block item_content %}
-    <h2>{{ object.content_data.title }} <code>{{object.content_data.references.full}}</code></h2>
-    <p>
-    Status : {{ object.content_data.state }}
-    {{ object.content_data.state }}, créée par {{ object.content_data.author.name }}
-    à {{ object.creation_dt }}.
-    </p>
-    <label>Liens</label>
-    <ul>
-        <li><a href="{{object.content_data.web_ur}}"> vers l'issue</a></li>
-    </ul>
+{% load dalec %}
 
-    <div>
-        <button id="btnFadetoggle" class="btn btn-primary" type="button"
-                onclick="$('.api-full').fadeToggle();"
+{% block item_content %}
+<div>
+    <a href="{{object.content_data.web_url}}">
+        <code>{{object.content_data.references.full}}</code>
+    </a>
+</div>
+Status : {{ object.content_data.state }}, créée par
+<span class="author-name">
+    <a title="{{object.content_data.author.name}}" href="{{object.content_data.author.web_url}}">
+        {{object.content_data.author.name}}
+    </a>
+</span>
+il y a {{ object.creation_dt|timesince }}.
+
+Dernière mise à jour il y a {{object.content_data.updated_at|api_date|timesince}}.
+
+
+<div>
+    <button id="btnFadetoggle"
+            class="btn btn-primary"
+            type="button"
+            onclick="$('.api-full').fadeToggle();"
             >
             Voir tout le retour de l'API
-        </button>
-        <pre class="api-full" style="display: none;"> {{ object.content_data|pprint }} </pre>
-    </div>
+    </button>
+    <pre class="api-full" style="display: none;"> {{ object.content_data|pprint }} </pre>
+</div>
+<hr>
 {% endblock %}
