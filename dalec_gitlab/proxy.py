@@ -66,7 +66,7 @@ class GitlabProxy(Proxy):
             if channel not in ["group", "project"]:
                 raise ValueError(
                     """Value `{}` is not a correct value for channel type and Issue. Issue has no meaning
-                    for it. It must be either "group" or "project"}
+                    for it. It must be either "group" or "project"
                     """.format(
                         channel
                     )
