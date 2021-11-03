@@ -119,11 +119,11 @@ class GitlabProxy(Proxy):
                 **event.attributes,
                 # id is already in attributes
                 "project": {
-                    "name": project.name,
-                    "name_with_namespace": project.name_with_namespace,
-                    "path": project.path,
-                    "path_with_namespace": project.path_with_namespace,
-                    "web_url": project.web_url
+                    "name": project["name"],
+                    "name_with_namespace": project["name_with_namespace"],
+                    "path": project["path"],
+                    "path_with_namespace": project["path_with_namespace"],
+                    "web_url": project["web_url"]
                     },
                 "last_update_dt": now(),
                 "creation_dt": event.created_at,
