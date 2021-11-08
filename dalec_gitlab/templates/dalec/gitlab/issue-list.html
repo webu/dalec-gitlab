@@ -12,13 +12,13 @@
         {% endif %}
     >
     <table>
-       <tr>
-           <th>Titre</th>
-           <th>Projet</th>
-           <th>Type</th>
-           <th>Date</th>
-           <th>Action</th>
-       </tr> 
+        <tr>
+        <th>Titre</th>
+        <th>Projet</th>
+        <th>Assigné⋅e</th>
+        <th>Créée le</th>
+        <th>Action</th>
+        </tr>
         {% for object in object_list %}
             {% include item_template %}
         {% endfor %}

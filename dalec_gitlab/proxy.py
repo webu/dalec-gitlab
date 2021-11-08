@@ -79,9 +79,18 @@ class GitlabProxy(Proxy):
 
         contents = {}
         for issue in issues:
+            project = gl.projects.get(issue.project_id).attributes
             contents[issue.id] = {
                 **issue.attributes,
                 # id is already in attributes
+                "project": {
+                    "name": project["name"],
+                    "name_with_namespace": project["name_with_namespace"],
+                    "path": project["path"],
+                    "path_with_namespace": project["path_with_namespace"],
+                    "web_url": project["web_url"],
+                    "namespace": project["namespace"]
+                    },
                 "last_update_dt": now(),
                 "creation_dt": issue.created_at,
             }
