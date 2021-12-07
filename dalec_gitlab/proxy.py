@@ -124,6 +124,7 @@ class GitlabProxy(Proxy):
         contents = {}
         for event in events:
             project = gl.projects.get(event.project_id).attributes
+            event.id = str(event.id)
             contents[event.id] = {
                 **event.attributes,
                 # id is already in attributes
