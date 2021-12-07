@@ -12,7 +12,9 @@ from dalec.proxy import Proxy
 
 import gitlab
 
-gl = gitlab.Gitlab(settings.DALEC_GITLAB_BASE_URL, private_token=settings.DALEC_GITLAB_API_TOKEN)
+gl = gitlab.Gitlab(
+    settings.DALEC_GITLAB_BASE_URL, private_token=settings.DALEC_GITLAB_API_TOKEN
+)
 gl.auth()
 
 
@@ -80,20 +82,25 @@ class GitlabProxy(Proxy):
         contents = {}
         for issue in issues:
             project = gl.projects.get(issue.project_id).attributes
-            contents[issue.id] = {
+            id = str(issue.id)
+            contents[id] = {
                 **issue.attributes,
-                # id is already in attributes
                 "project": {
                     "name": project["name"],
                     "name_with_namespace": project["name_with_namespace"],
                     "path": project["path"],
                     "path_with_namespace": project["path_with_namespace"],
                     "web_url": project["web_url"],
-                    "namespace": project["namespace"]
-                    },
-                "last_update_dt": now(),
-                "creation_dt": issue.created_at,
+                    "namespace": project["namespace"],
+                },
             }
+            contents[id].update(
+                {
+                    "id": id,  # needed otherwise id is an int
+                    "last_update_dt": now(),
+                    "creation_dt": issue.created_at,
+                }
+            )
         return contents
 
     def _fetch_event(self, nb, channel=None, channel_object=None):
@@ -124,18 +131,22 @@ class GitlabProxy(Proxy):
         contents = {}
         for event in events:
             project = gl.projects.get(event.project_id).attributes
-            event.id = str(event.id)
-            contents[event.id] = {
+            id = str(event.id)
+            contents[id] = {
                 **event.attributes,
-                # id is already in attributes
                 "project": {
                     "name": project["name"],
                     "name_with_namespace": project["name_with_namespace"],
                     "path": project["path"],
                     "path_with_namespace": project["path_with_namespace"],
-                    "web_url": project["web_url"]
-                    },
-                "last_update_dt": now(),
-                "creation_dt": event.created_at,
+                    "web_url": project["web_url"],
+                },
             }
+            contents[id].update(
+                {
+                    "id": id,  # needed otherwise id is a int
+                    "last_update_dt": now(),
+                    "creation_dt": event.created_at,
+                }
+            )
         return contents
