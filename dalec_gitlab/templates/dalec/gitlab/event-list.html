@@ -1,37 +1,20 @@
-{% block dalec_list_header %}
-{% endblock dalec_list_header %}
-
-{% block dalec_list_body %}
-    <div class="dalec-list"
-         id="dalec-{{ id }}"
-         data-url="{{ url }}"
-         data-app="{{ app }}" data-content-type="{{ content_type}}"
-         {% if channel %}
-            data-channel="{{ channel }}"
-            data-channel-object="{{ channel_object }}"
-        {% endif %}
-    >
+{% extends "dalec/default/list.html" %}
+{% load i18n %}
+{% block dalec_list_items %}
     <table>
-       <tr>
-           <th>Titre</th>
-           <th>Projet</th>
-           <th>Type</th>
-           <th>Date</th>
-           <th>Action</th>
-       </tr> 
-        {% for object in object_list %}
-            {% include item_template %}
-        {% endfor %}
+        <thead>
+            <tr>
+                <th>{% trans "Title" %}</th>
+                <th>{% trans "Project" %}</th>
+                <th>{% trans "Type" %}</th>
+                <th>{% trans "Date" %}</th>
+                <th>{% trans "Action" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for object in object_list %}
+                {% include item_template %}
+            {% endfor %}
+        </tbody>
     </table>
-    </div>
-    {% if ajax_refresh %}
-    <script type="text/javascript">
-        window.addEventListener("load", (event) => {
-            dalec_fetch_content(document.getElementById('dalec-{{ id }}'));
-        });
-    </script>
-    {% endif %}
-{% endblock dalec_list_body %}
-
-{% block dalec_list_footer %}
-{% endblock dalec_list_footer %}
+{% endblock dalec_list_items %}
