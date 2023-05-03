@@ -12,6 +12,7 @@ import logging
 from dalec.proxy import Proxy
 
 import gitlab
+
 logger = logging.getLogger("dalec")
 
 gl = gitlab.Gitlab(
@@ -117,7 +118,12 @@ class GitlabProxy(Proxy):
         options = {"per_page": nb}
 
         if channel is not None:
-            if channel not in ["group", "project", "user", "issue"]: # futur: add "dashboard":
+            if channel not in [
+                "group",
+                "project",
+                "user",
+                "issue",
+            ]:  # futur: add "dashboard":
                 raise ValueError(
                     """Value `{}` is not a correct value for channel type and Event. Event has no meaning
                     for it. It must be either "project", "user" or "issue".
@@ -127,7 +133,7 @@ class GitlabProxy(Proxy):
                 )
         else:
             options["scope"] = "all"
-    
+
         if channel != "dashboard":
             channel_retrieved = self._filter_channel(channel, channel_object)
 
