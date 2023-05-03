@@ -27,42 +27,50 @@ INSTALLED_APPS = [
 
 ## Usage
 
-General usage:
+General usage: in a template
+
 ```django
 {% load dalec %}
 
 {% dalec "gitlab" content_type [channel=None] [channel_object=None] [template=None] %}
 ```
 
-Real examples:
+## Real examples
 
-### Issue
+### content_type "issue"
+
+- Available `channel`: `group`, `project`.
+- Available `channel_object`: group or project id or public_id
+
 
 Retrieves recent gitlab issues for a project:
+
 ```django
-{% dalec "gitlab" "issue" channel="project" channel_object="tardis" %}
+{% dalec "gitlab" "issue" channel="project" channel_object="14" %}
 ```
 
-Retrieves last gitlab issues for a specific user:
-```django
-{% dalec "gitlab" "issue" channel="user" channel_object="doctor-who" %}
-```
+### content_type "event"
 
-### Event
+- Available `channel`: `group`, `project`, `user`.
+- Available `channel_object`: group or project id or public_id, or user username
+
 
 Retrieves recent gitlab activity for a user:
+
 ```django
 {% dalec "gitlab" "event" channel="user" channel_object="doctor-who" %}
 ```
 
 Retrieves recent gitlab activity for a group:
+
 ```django
-{% dalec "gitlab" "event" channel="group" channel_object="companions" %}
+{% dalec "gitlab" "event" channel="group" channel_object="42" %}
 ```
 
 Retrieves recent gitlab activity for a project:
+
 ```django
-{% dalec "gitlab" "event" channel="project" channel_object="tardis" %}
+{% dalec "gitlab" "event" channel="project" channel_object="512" %}
 ```
 
 ## Settings

@@ -1,31 +1,35 @@
-from datetime import timedelta
+# Standard libs
+import logging
 from typing import Dict
-import requests
 import urllib.parse
 
-from django.utils.dateparse import parse_datetime
-from django.utils.timezone import now
-from django.utils.http import urlencode
+# Django imports
 from django.conf import settings
-import logging
+from django.utils.timezone import now
 
+# DALEC imports
 from dalec.proxy import Proxy
-
 import gitlab
 
 logger = logging.getLogger("dalec")
 
-gl = gitlab.Gitlab(
-    settings.DALEC_GITLAB_BASE_URL, private_token=settings.DALEC_GITLAB_API_TOKEN
-)
+gl = gitlab.Gitlab(settings.DALEC_GITLAB_BASE_URL, private_token=settings.DALEC_GITLAB_API_TOKEN)
 gl.auth()
 
 
 class GitlabProxy(Proxy):
     """
     Gitlab dalec proxy to fetch the last :
-    * issue:
-    * event:
+
+    content_type = {"issue", "event"}
+
+    For `issue`:
+        - channel = {"group", "project"}
+        - channel_object = group id or public_id, project id or public_id
+    For `event`:
+        - channel = {"group", "project", "user"}
+        - channel_object = group id or public_id, project id or public_id, or user username
+
     """
 
     app = "gitlab"
@@ -35,10 +39,14 @@ class GitlabProxy(Proxy):
     ) -> Dict[str, dict]:
         if content_type == "issue":
             return self._fetch_issue(nb, channel, channel_object)
-        if content_type == "event":
+        elif content_type == "event":
             return self._fetch_event(nb, channel, channel_object)
 
-        raise ValueError("Invalid content_type %s" % content_type)
+        raise ValueError(
+            "Invalid content_type `{}`, only `issue` and `event` are supported.".format(
+                content_type
+            )
+        )
 
     def _filter_channel(self, channel=None, channel_object=None):
         if channel_object:
@@ -70,9 +78,7 @@ class GitlabProxy(Proxy):
         if channel is not None:
             if channel not in ["group", "project"]:
                 raise ValueError(
-                    """Value `{}` is not a correct value for channel type and Issue. Issue has no meaning
-                    for it. It must be either "group" or "project"
-                    """.format(
+                    "Value `{}` is not a correct value for channel type and Issue. Issue has no meaning for it. It must be either `group` or `project` ".format(
                         channel
                     )
                 )
@@ -110,7 +116,7 @@ class GitlabProxy(Proxy):
         """
         Get the latest event from gitlab.
 
-        If channel is "group", "project", "user" or "issue" we retrieve the event belonging to the channel.
+        If channel is "group", "project" or "user" we retrieve the event belonging to the channel.
 
         FUTUR:
         If channel is "dashboard", we retrieve event similar to the "/dashboard/activity" of a user (i.e. all activities related to the user, not *from* the user (see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/19816).)
@@ -122,12 +128,9 @@ class GitlabProxy(Proxy):
                 "group",
                 "project",
                 "user",
-                "issue",
             ]:  # futur: add "dashboard":
                 raise ValueError(
-                    """Value `{}` is not a correct value for channel type and Event. Event has no meaning
-                    for it. It must be either "project", "user" or "issue".
-                    """.format(
+                    "Value `{}` is not a correct value for channel type and Event. Event has no meaning for it. It must be either `project`, `user` or `issue`.".format(
                         channel
                     )
                 )
