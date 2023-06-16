@@ -7,6 +7,7 @@ import urllib.parse
 from django.conf import settings
 from django.utils.timezone import now
 
+# Third Party
 # DALEC imports
 from dalec.proxy import Proxy
 import gitlab
@@ -41,6 +42,8 @@ class GitlabProxy(Proxy):
             return self._fetch_issue(nb, channel, channel_object)
         elif content_type == "event":
             return self._fetch_event(nb, channel, channel_object)
+        elif content_type == "milestone":
+            return self._fetch_milestone(nb, channel, channel_object)
 
         raise ValueError(
             "Invalid content_type `{}`, only `issue` and `event` are supported.".format(
@@ -184,6 +187,61 @@ class GitlabProxy(Proxy):
                     "id": id,  # needed otherwise id is a int
                     "last_update_dt": now(),
                     "creation_dt": event.created_at,
+                }
+            )
+        return contents
+
+    def _fetch_milestone(self, nb, channel=None, channel_object=None):
+        options = {"per_page": nb}
+
+        if channel is not None:
+            if channel not in [
+                "group",
+                "project",
+                "user",
+            ]:  # futur: add "dashboard":
+                raise ValueError(
+                    "Value `{}` is not a correct value for channel type and Event. Event has no meaning for it. It must be either `project`, `user` or `issue`.".format(
+                        channel
+                    )
+                )
+
+        channel_retrieved = self._filter_channel(channel, channel_object)
+        milestones = channel_retrieved.milestones.list(**options)
+        contents = {}
+        project = channel_retrieved.attributes
+        for milestone in milestones:
+            milestones_issues = milestone.issues()
+            issues = []
+            closed_issues = []
+            for issue in milestones_issues:
+                issues.append(issue.iid)
+                if issue.state == "closed":
+                    closed_issues.append(issue.iid)
+            id = str(milestone.id)
+
+            contents[id] = {
+                **milestone.attributes,
+                "issues": {
+                    "all": issues,
+                    "closed": closed_issues,
+                    "total_count": len(issues),
+                    "closed_count": len(closed_issues),
+                },
+                "project": {
+                    "name": project["name"],
+                    "name_with_namespace": project["name_with_namespace"],
+                    "path": project["path"],
+                    "path_with_namespace": project["path_with_namespace"],
+                    "web_url": project["web_url"],
+                    "namespace": project["namespace"],
+                },
+            }
+            contents[id].update(
+                {
+                    "id": id,  # needed otherwise id is a int
+                    "last_update_dt": now(),
+                    "creation_dt": milestone.created_at,
                 }
             )
         return contents

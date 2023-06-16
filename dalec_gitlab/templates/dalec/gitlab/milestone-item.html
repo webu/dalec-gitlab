@@ -1,0 +1,29 @@
+{% extends "dalec/default/item.html" %}
+{% load dalec %}
+
+{% block item_content %}
+<tr>
+    <td class="gitlab milestone title">
+        <a href="{{object.content_data.web_url}}">
+            {{object.content_data.title}}
+        </a>
+    </td>
+    <td class="gitlab milestone created_at">
+        {{object.creation_dt|date:"DATE_FORMAT"}}
+    </td>
+    <td class="gitlab milestone due_date">
+        {% if object.content_data.due_date %}
+            {{object.content_data.due_date}}
+        {% else %} -
+        {% endif %}
+    </td>
+    <td class="gitlab milestone count_issues">
+        {{object.content_data.issues.total_count}}
+    </td>
+    <td class="gitlab milestone closed_issues">
+        {{object.content_data.issues.closed_count}}
+    </td>
+</tr>
+{% endblock %}
+
+

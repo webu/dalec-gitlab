@@ -1,0 +1,20 @@
+{% extends "dalec/default/list.html" %}
+{% load i18n %}
+{% block dalec_list_items %}
+    <table>
+        <thead>
+            <tr>
+                <th>{% trans "Title" %}</th>
+                <th>{% trans "Created at" %}</th>
+                <th>{% trans "Due date" %}</th>
+                <th>{% trans "Number of tickets" %}</th>
+                <th>{% trans "Number of closed" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for object in object_list %}
+                {% include item_template %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock dalec_list_items %}
