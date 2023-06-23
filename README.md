@@ -4,7 +4,7 @@ Django Aggregate a Lot of External Content -- Gitlab
 
 Aggregate last gitlab issue or event from a given gitlab instance.
 
-Plugin of [dalec](https://dev.webu.coop/w/i/dalec).
+Plugin of [dalec](https://github.com/webu/dalec).
 
 ## Installation
 
@@ -50,7 +50,7 @@ Retrieves recent gitlab issues for a project:
 {% dalec "gitlab" "issue" channel="project" channel_object="14" %}
 ```
 
-Or for multiple project at once:
+Or for multiple projects at once:
 
 ```django
 {% dalec "gitlab" "issue" channel="project" channel_objects=["14", "42"] %}
