@@ -32,7 +32,7 @@ General usage: in a template
 ```django
 {% load dalec %}
 
-{% dalec "gitlab" content_type [channel=None] [channel_object=None] [template=None] [ordered_by=None] %}
+{% dalec "gitlab" content_type [channel=None] [channel_object=None] [channel_objects=None] [template=None] [ordered_by=None] %}
 ```
 
 ## Real examples
@@ -41,6 +41,7 @@ General usage: in a template
 
 - Available `channel`: `group`, `project`.
 - Available `channel_object`: group or project id or public_id
+- Available `channel_objects`: list of group or project id or public_id
 
 
 Retrieves recent gitlab issues for a project:
@@ -49,10 +50,17 @@ Retrieves recent gitlab issues for a project:
 {% dalec "gitlab" "issue" channel="project" channel_object="14" %}
 ```
 
+Or for multiple project at once:
+
+```django
+{% dalec "gitlab" "issue" channel="project" channel_objects=["14", "42"] %}
+```
+
 ### content_type "event"
 
 - Available `channel`: `group`, `project`, `user`.
 - Available `channel_object`: group or project id or public_id, or user username
+- Available `channel_objects`: list of group or project id or public_id, or user username
 
 
 Retrieves recent gitlab activity for a user:
@@ -77,6 +85,9 @@ Retrieves recent gitlab activity for a project:
 
 - Available `channel`: `group`, `project`.
 - Available `channel_object`: group or project id or public_id
+- Available `channel_objects`: list of group or project id or public_id
+
+Milestone are retrieve by descending updated date.
 
 Retrieves gitlab milestone for a project or group:
 ```django
