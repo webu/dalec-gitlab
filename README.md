@@ -32,7 +32,7 @@ General usage: in a template
 ```django
 {% load dalec %}
 
-{% dalec "gitlab" content_type [channel=None] [channel_object=None] [template=None] %}
+{% dalec "gitlab" content_type [channel=None] [channel_object=None] [template=None] [ordered_by=None] %}
 ```
 
 ## Real examples
@@ -73,11 +73,23 @@ Retrieves recent gitlab activity for a project:
 {% dalec "gitlab" "event" channel="project" channel_object="512" %}
 ```
 
+### content_type "milestone"
+
+- Available `channel`: `group`, `project`.
+- Available `channel_object`: group or project id or public_id
+
+Retrieves gitlab milestone for a project or group:
+```django
+{% dalec "gitlab" "milestone" channel="project" channel_object="14" %}
+
+{% dalec "gitlab" "milestone" channel="group" channel_object="42" %}
+```
+
 ## Settings
 
 Django settings must define:
 
-  - `GITLAB_BASE_URL` : gitlab instance url (ex: `https://gitlab.com/`)
-  - `GITLAB_API_TOKEN` : gitlab api token (ex: `azeazeaezdfqsmlkrjzr`)
+  - `DALEC_GITLAB_BASE_URL` : gitlab instance url (ex: `https://gitlab.com/`)
+  - `DALEC_GITLAB_API_TOKEN` : gitlab api token (ex: `azeazeaezdfqsmlkrjzr`)
 
 
