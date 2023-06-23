@@ -194,6 +194,11 @@ class GitlabProxy(Proxy):
         return contents
 
     def _fetch_milestone(self, nb, channel=None, channel_object=None):
+        """Retrieve milestone and associated issues.
+
+        ordering by last updated_at
+        """
+        # TODO: wait for https://github.com/webu/dalec/issues/4 for custom ordering
         options = {"per_page": nb, "order_by": "updated_at", "sort": "desc"}
 
         if channel not in ["group", "project"]:
