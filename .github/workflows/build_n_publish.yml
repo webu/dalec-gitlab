@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: release
-      url: https://pypi.org/p/dalec-gitlab
+      url: https://test.pypi.org/p/dalec-gitlab
     permissions:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
@@ -36,7 +36,7 @@ jobs:
     - name: Publish package distributions to yPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        repository-url: https://pypi.org/legacy/
+        repository-url: https://test.pypi.org/legacy/
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
 
