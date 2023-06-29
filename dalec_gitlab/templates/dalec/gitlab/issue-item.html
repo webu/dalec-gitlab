@@ -2,30 +2,14 @@
 {% load dalec %}
 
 {% block item_content %}
-<tr>
-    <td class="gitlab issue title">
-        <a href="{{object.content_data.web_url}}">
-            <code>{{object.content_data.references.relative}}</code>
-        </a>
-    </td>
-    <td class="gitlab issue project">
-        {{object.content_data.project.name}}
-    </td>
-    <td class="gitlab issue assignee">
-        {{object.content_data.assignee.name}}
-    </td>
-    <td class="gitlab issue created_at">
-        {{object.creation_dt|date:"DATE_FORMAT"}}
-    </td>
-    <td class="gitlab issue action">
-        <button id="btnFadetoggle"
-                class="btn btn-primary"
-                type="button"
-                onclick="$('.api-full').fadeToggle();"
-                >
-                Voir tout le retour de l'API
-        </button>
-        <pre class="api-full" style="display: none;"> {{ object.content_data|pprint }} </pre>
-    </td>
-</tr>
+    <tr>
+        <td class="gitlab issue title">
+            <a href="{{ object.content_data.web_url }}">
+                <code>{{ object.content_data.references.relative }}</code>
+            </a>
+        </td>
+        <td class="gitlab issue project">{{ object.content_data.project.name }}</td>
+        <td class="gitlab issue assignee">{{ object.content_data.assignee.name }}</td>
+        <td class="gitlab issue created_at">{{ object.creation_dt|date:"DATE_FORMAT" }}</td>
+    </tr>
 {% endblock %}
