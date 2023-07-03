@@ -25,7 +25,7 @@ release = "0.1.4"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    # "sphinx.ext.autodoc",
+    "sphinx.ext.autodoc",
     # "sphinx.ext.intersphinx",
     # "sphinx.ext.viewcode",
     # "sphinx.ext.napoleon",
@@ -35,6 +35,7 @@ extensions = [
 
 templates_path = ["_templates"]
 exclude_patterns = []
+autodoc_mock_imports = ["django", "dalec", "gitlab"]
 
 source_suffix = {
     ".rst": "restructuredtext",
