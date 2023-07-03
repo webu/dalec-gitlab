@@ -36,3 +36,11 @@ would return with the default template something like:
 This is rather simplistic, but with a bit of template overriding and css, you could easily go to this instead:
 
 ![](./examples/example_event_fosm.png)
+
+## Milestone
+
+```htmldjango
+{% load dalec %}
+
+{% dalec "gitlab" "milestone" channel="project" channel_objects='["55", "42"]' %}
+```
